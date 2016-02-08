@@ -16,7 +16,7 @@ html, body {
 }
 
 .listDiv {
-	background-color: indianred;
+	background-color: lightgrey;
 
 }
 
@@ -24,6 +24,11 @@ html, body {
 	list-style: none;
 	margin: 0;
 	padding: 0;
+}
+
+li {
+	padding: 10px 20px;
+	border-top: 1px solid darkgrey;
 }
 
 .form {

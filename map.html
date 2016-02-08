@@ -6,6 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href='https://fonts.googleapis.com/css?family=Raleway:400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" type="text/css" href="map.css">
+
 	</head>
 	<body>
 		<div class="sideNav">
@@ -15,13 +16,13 @@
 				</form>
 			</div>
 			<div class="listDiv">
-				<ul class="listUl">
-					<li>test</li>
+				<ul class="listUl" data-bind="foreach: markerList">
+					<li data-bind="text: title"></li>
 				</ul>
 			</div>
 		</div>
 		<div id="map"></div>
-		<div><h3>InfoWindo</h3><p>info text</p></div>
+		<script src="knockout-3.4.0.js"></script>
 		<script type="text/javascript" src="map.js"></script>
 		<script async defer
       		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdiv9bYXkO-fwLjjWYawwXuOs0E78c29k&callback=initMap">

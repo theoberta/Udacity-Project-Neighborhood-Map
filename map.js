@@ -1,13 +1,6 @@
 // api key : AIzaSyBdiv9bYXkO-fwLjjWYawwXuOs0E78c29k
 
-var map;
-var centerMap = {lat: 37.383428, lng: -122.066492};
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: centerMap,
-    zoom: 12
-  });
-
+// model? data
   var markersData = [
   	{
   		title: "Castro street",
@@ -36,22 +29,31 @@ function initMap() {
   			lat: 37.414189,
   			lng: -122.077441
   		}
-  	},{
+  	},
+  	{
   		title: "Mountain View Public Library",
   		markerPosition: {
   			lat: 37.390310,
   			lng: -122.083514
   		}
-  	},
+  	}
   ];
 
-
-var markers = [];
-
-var infowindow = new google.maps.InfoWindow({
-	content: ""
+var map;
+var centerMap = {lat: 37.383428, lng: -122.066492};
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: centerMap,
+    zoom: 12
   });
 
+// declare markers array
+var markers = [];
+
+// declare info window - check declaration
+var infowindow = new google.maps.InfoWindow({});
+
+	// generate markers
 	for (var i = 0; i < markersData.length; i++) {
   		markers.push(new google.maps.Marker({
     	position: markersData[i].markerPosition,
@@ -61,6 +63,7 @@ var infowindow = new google.maps.InfoWindow({
   		})
   		);
 
+  		// and add event listener so animaion starts and info window start on click
   		markers[i].addListener('click', (function(markerCopy) {
   			return function() {
 	  			if (markers[markerCopy].getAnimation() !== null) {
@@ -70,14 +73,19 @@ var infowindow = new google.maps.InfoWindow({
     				markers[markerCopy].setAnimation(google.maps.Animation.BOUNCE);
   				}
   				infowindow.setContent("<div><h3>" + markers[markerCopy].title + "</h3><p>info text</p></div>");
-  				console.log(infowindow.content);
   				infowindow.open(map, markers[markerCopy]);
   			};
   		})(i));
-
-
   	}
-
-
 }
 
+
+
+var ViewModel = function() {
+	this.markerList = ko.observableArray([]);
+	for (var i = 0; i < 5; i++) {
+		this.markerList().push(markersData[i]);
+	}
+
+};
+ko.applyBindings(new ViewModel());
