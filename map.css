@@ -28,7 +28,16 @@ html, body {
 
 li {
 	padding: 10px 20px;
-	border-top: 1px solid darkgrey;
+	border-bottom: 1px solid darkgrey;
+	cursor: pointer;
+}
+
+li:hover {
+	background-color: #e7e7e7;
+}
+
+.selected {
+	background-color: #e7e7e7;
 }
 
 .form {
