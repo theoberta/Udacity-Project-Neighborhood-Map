@@ -9,11 +9,11 @@
 
 	</head>
 	<body>
-	<h1 data-bind="text: currentItem"></h1>
-		<div class="sideNav">
+	<div class="side">
+		<div class="sideNav" data-bind="css: {displayNone: display() === true}">
 			<div class="formDiv">
 				<form class="form">
-					<input type="text" placeholder="search">
+					<input class="searchInput" type="text" placeholder="search" data-bind="textInput: searchedItem"><button data-bind="click: updateMarkers" class="searchBtn"><img class="searchImg" src="images/search.png"></button>
 				</form>
 			</div>
 			<div class="listDiv">
@@ -21,8 +21,11 @@
 					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().title == title}"></li>
 				</ul>
 			</div>
-		</div>
-		<div id="map"></div>
+		</div> <!-- sideNav -->
+
+		<button data-bind="click: setDisplay" class="collapseBtn">➜</button>
+	</div>
+	<div id="map"></div>
 
 
 

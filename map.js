@@ -51,24 +51,47 @@
 var ViewModel = function() {
 	var self = this;
 	var oldIndex;
-	// create observable array and populate
+  this.searchedItem = ko.observable();
+  // create observable array and populate
 	this.markerList = ko.observableArray([]);
-	markersData.forEach(function(markerItem){
-		self.markerList()[markerItem.index] = markersData[markerItem.index];
-	});
+  // populate - review
+  if (self.searchedItem() === undefined) {
+      markersData.forEach(function(markerItem){
+        self.markerList()[markerItem.index] = markersData[markerItem.index];
+    });
+    }
+  //update List when searched
+  this.updateMarkers = function(data, event) {
+        self.markerList([]);
+        var searched = self.searchedItem().toLowerCase();
+        markersData.forEach(function(markerItem){
+             var place = markerItem.title.toLowerCase();
+             if (place.search(searched) != -1) {
+                self.markerList.push(markerItem);
+              }
+        });
+   };
 
 	this.currentItem = ko.observable(this.markerList()[this.markerList()[0].index]);
-
+  // selects and animates marker
 	this.setSelected = function(data) {
 		self.currentItem(data);
 		animate(oldIndex);
 		animate(data.index);
 		oldIndex = data.index;
-		}
-	// console.log(self.currentItem());
+		};
+
+    // display side nav
+    this.display = ko.observable(false);
+    this.setDisplay = function() {
+        if(!self.display()) {
+          self.display(true);
+        }
+        else {
+          self.display(false);
+        }
+    };
 };
-
-
 
 var viewmodel = new ViewModel();
 ko.applyBindings(viewmodel);
@@ -96,6 +119,7 @@ function initMap() {
 	// declare info window - check declaration
 	var infowindow = new google.maps.InfoWindow({});
 
+  // TODO:
 	// generate markers - use markerlist???
 	// console.log(viewmodel.markerList.length);
 	// is 0 - why
