@@ -60,16 +60,22 @@ var ViewModel = function() {
         self.markerList()[markerItem.index] = markersData[markerItem.index];
     });
     }
-  //update List when searched
+
+  //update List when searched - review?
   this.updateMarkers = function(data, event) {
         self.markerList([]);
         var searched = self.searchedItem().toLowerCase();
+        // right index is passed for the new array - for loop?
+        var i = 0;
         markersData.forEach(function(markerItem){
              var place = markerItem.title.toLowerCase();
              if (place.search(searched) != -1) {
+                markerItem.index = i;
+                i++;
                 self.markerList.push(markerItem);
               }
         });
+        generateMarker();
    };
 
 	this.currentItem = ko.observable(this.markerList()[this.markerList()[0].index]);
@@ -106,6 +112,7 @@ var map;
 var markers = [];
 var infowindow = {};
 var animate;
+var generateMarker;
 
 
 function initMap() {
@@ -119,27 +126,33 @@ function initMap() {
 	// declare info window - check declaration
 	var infowindow = new google.maps.InfoWindow({});
 
-  // TODO:
-	// generate markers - use markerlist???
-	// console.log(viewmodel.markerList.length);
-	// is 0 - why
-	for (var i = 0; i < markersData.length; i++) {
-  		markers.push(new google.maps.Marker({
-    	position: markersData[i].markerPosition,
-    	map: map,
-    	title: markersData[i].title,
-    	animation: google.maps.Animation.DROP
-  		})
-  		);
 
-  		// and add event listener so animaion starts and info window start on click
-			markers[i].addListener('click', (function(markerCopy) {
-  			return function() {
-  				viewmodel.setSelected(viewmodel.markerList()[markerCopy]);
-  			};
-  		})(i));
+	 // generate markers using markerList
+    generateMarker = function() {
+      // remove markers
+      for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+        }
+        markers = [];
+        // add markers according to makerList
+        for (var i = 0; i < viewmodel.markerList().length; i++) {
+          markers.push(new google.maps.Marker({
+            position: viewmodel.markerList()[i].markerPosition,
+            map: map,
+            title: viewmodel.markerList()[i].title,
+            animation: google.maps.Animation.DROP
+            })
+          );
+        // and add event listener so animaion starts and info window start on click
+          markers[i].addListener('click', (function(markerCopy) {
+            return function() {
+              viewmodel.setSelected(viewmodel.markerList()[markerCopy]);
+            };
+          })(i));
+        }
+    };
 
-		}
+    generateMarker();
 
   	animate = function(markerNumber) {
   				if (markerNumber !== undefined) {
@@ -150,7 +163,6 @@ function initMap() {
   					else {
   						markers[markerNumber].setAnimation(null);
   					}
-
   					// add infowindow
   					infowindow.setContent("<div><h3>" + markers[markerNumber].title + "</h3><p>info text</p></div>");
   					infowindow.open(map, markers[markerNumber]);
