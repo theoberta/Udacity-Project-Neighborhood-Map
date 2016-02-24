@@ -9,8 +9,8 @@
 
 	</head>
 	<body>
-	<div class="side">
-		<div class="sideNav" data-bind="css: {displayNone: display() === true}">
+	<div class="left" data-bind="css: {displayNone: display() === true}">
+		<div class="sideNav">
 			<div class="formDiv">
 				<form class="form">
 					<input class="searchInput" type="text" placeholder="search" data-bind="textInput: searchedItem"><button data-bind="click: updateMarkers" class="searchBtn"><img class="searchImg" src="images/search.png"></button>
@@ -23,10 +23,10 @@
 			</div>
 		</div> <!-- sideNav -->
 
-		<button data-bind="click: setDisplay" class="collapseBtn">➜</button>
-	</div>
+		
+	</div><button data-bind="click: setDisplay" class="collapseBtn">➜</button><div class="rigth" data-bind="css: {fullWidth: display() === true}">
 	<div id="map"></div>
-
+	</div>
 
 		<script src="jquery-1.12.0.min.js"></script>
 		<script src="knockout-3.4.0.js"></script>

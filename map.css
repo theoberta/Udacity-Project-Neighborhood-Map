@@ -13,6 +13,7 @@ button {
 
 #map {
 	height: 100%;
+	width: 100%;
 }
 
 
@@ -89,12 +90,50 @@ li:hover {
 
 .collapseBtn {
 	position: absolute;
+	z-index: 1;
+	height: 30px;
+	background-color: darkgrey;
+	color: white;
 }
 
 .displayNone {
-	display: none;
+	/*display: none !important;*/
+	
+	position: absolute;
+	
+
 }
 
 
 
 /*div.gmnoprint { padding-left: 50px; }*/
+
+
+.left {
+	width: 25%;
+	height: 100%;
+	display: inline-block;
+	
+	vertical-align: top;
+	background-color: lightgrey;
+
+}
+
+.rigth {
+	height: 100%;
+	width: 75%;
+	display: inline-block;
+
+}
+
+.fullWidth {
+	width: 100% !important;
+	/*-webkit-transition-duration: 1s;
+  -moz-transition-duration: 1s;
+  -o-transition-duration: 1s;
+  transition-duration: 1s;*/
+}
+
+/*body {
+	width: 900px;
+}*/

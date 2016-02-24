@@ -99,13 +99,13 @@ var ViewModel = function() {
     this.setSelected = function(data) {
     	
     	self.currentItem(data);
-
+    	animate(oldIndex);
+        oldIndex = data.index;
      	getInfo(data.title, function(result) {
      		var info = result.query.search[0].snippet;
      	    animate(data.index, info);
      	});
-     	animate(oldIndex);
-        oldIndex = data.index;
+     	
     };
 
     // display side nav
@@ -113,7 +113,9 @@ var ViewModel = function() {
     this.setDisplay = function() {
         if (!self.display()) {
             self.display(true);
-        } else {
+            setTimeout(setCenter, 3000);
+            
+            } else {
             self.display(false);
         }
     };
@@ -134,6 +136,7 @@ var markers = [];
 var infowindow = {};
 var animate;
 var generateMarker;
+var setCenter;
 
 
 
@@ -201,5 +204,26 @@ function initMap() {
             }   
         }
     };
+
+    // try to recenter map when list view is hidden - does not work
+    // map center is the same according to maps api, but is off center in browser when div grows
+    // changed map would be 100% when first loaded, does not solve problem
+    var currentCenter = map.getCenter();
+    
+    setCenter = function() {
+    	// console.log(currentCenter);
+    	var latLng = new google.maps.LatLng(37.383428, -122.066492);
+    	map.setCenter(latLng);
+    };
 }
 
+// {lat: 37.383428, lng: -122.066492}
+// map.setCenter(new google.maps.LatLng(37.383428, 151));
+// map sta aligend to center, code from: http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
+$(window).on('resize', function() {
+	var currCenter = map.getCenter();
+    google.maps.event.trigger(map, 'resize');
+    map.setCenter(currCenter);
+})
+
+// $( ".rigth" ).css( "border", "3px solid red" );
