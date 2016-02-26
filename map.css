@@ -116,6 +116,7 @@ li:hover {
 	
 	vertical-align: top;
 	background-color: lightgrey;
+	overflow: scroll;
 
 }
 

@@ -9,7 +9,7 @@
 
 	</head>
 	<body>
-	<div class="left" data-bind="css: {displayNone: display() === true}">
+	<div class="left" data-bind="css: {displayNone: displayed() === true}">
 		<div class="sideNav">
 			<div class="formDiv">
 				<form class="form">
@@ -18,13 +18,14 @@
 			</div>
 			<div class="listDiv">
 				<ul class="listUl" data-bind="foreach: markerList">
-					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().title == title}"></li>
+					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().title === title}"></li>
+					<!-- css: {selected: $parent.definedTitle === true } -->
 				</ul>
 			</div>
 		</div> <!-- sideNav -->
 
 		
-	</div><button data-bind="click: setDisplay" class="collapseBtn">➜</button><div class="rigth" data-bind="css: {fullWidth: display() === true}">
+	</div><button data-bind="click: setDisplay" class="collapseBtn">➜</button><div class="rigth" data-bind="css: {fullWidth: displayed() === true}">
 	<div id="map"></div>
 	</div>
 

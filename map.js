@@ -1,64 +1,15 @@
-// api key : AIzaSyBdiv9bYXkO-fwLjjWYawwXuOs0E78c29k
-// model? data
-var markersData = [{
-    index: 0,
-    title: "Castro street",
-    markerPosition: {
-        lat: 37.388343,
-        lng: -122.082375
-    }
-}, {
-    index: 1,
-    title: "Shoreline Park",
-    markerPosition: {
-        lat: 37.431701,
-        lng: -122.087610
-    }
-}, {
-    index: 2,
-    title: "Farmer\'s Market",
-    markerPosition: {
-        lat: 37.393355,
-        lng: -122.073995
-    }
-}, {
-    index: 3,
-    title: "Computer History Museum",
-    markerPosition: {
-        lat: 37.414189,
-        lng: -122.077441
-    }
-}, {
-    index: 4,
-    title: "Mountain View Public Library",
-    markerPosition: {
-        lat: 37.390310,
-        lng: -122.083514
-    }
-}];
-
-
-
-// AJAX REQUEST
-
-
+// AJAX Request to foursquare
 function getInfo(search, callback) {
-    $.ajax({
-        url: "https://en.wikipedia.org/w/api.php",
+	$.ajax({
+        url: "https://api.foursquare.com/v2/venues/search?",
         data: {
-            action: 'query',
-            list: 'search',
-            srsearch: search,
-            format: 'json'
+        	client_id: 
+        	client_secret: 
+        	v: '20130815',
+        	near: "Mountain View",
+        	query: search
         },
-        dataType: 'jsonp',
         success: callback
-        // success: function(data) {
-        //     var wikiart = data.query.search;
-            
-        //     info = wikiart[0].snippet;
-             
-        // }
     });
 };
 
@@ -67,56 +18,73 @@ function getInfo(search, callback) {
 var ViewModel = function() {
     var self = this;
     var oldIndex;
-    this.searchedItem = ko.observable();
+    this.searchedItem = ko.observable("sushi");
     // create observable array and populate
     this.markerList = ko.observableArray([]);
-    // populate - review
-    if (self.searchedItem() === undefined) {
-        markersData.forEach(function(markerItem) {
-            self.markerList()[markerItem.index] = markersData[markerItem.index];
-        });
-    }
+    
 
-    //update List when searched - review?
+    //update List when searched
     this.updateMarkers = function(data, event) {
-        self.markerList([]);
-        var searched = self.searchedItem().toLowerCase();
-        // right index is passed for the new array - for loop?
-        var i = 0;
-        markersData.forEach(function(markerItem) {
-            var place = markerItem.title.toLowerCase();
-            if (place.search(searched) != -1) {
-                markerItem.index = i;
-                i++;
-                self.markerList.push(markerItem);
-            }
-        });
-        generateMarker();
+    	// empty marker list
+    	self.markerList([]);
+    	// lowercase serached item from input
+    	var searched = self.searchedItem().toLowerCase();
+    	// call getInfo
+    	getInfo(searched, function(result) {
+    		// console.log(result.response.venues);
+    		var resultArray = result.response.venues;
+    		console.log(resultArray[0]);
+    		for (var i = 0; i < resultArray.length; i++) {
+    			var x = {};
+    			x.index = i;
+    			x.title = resultArray[i].name;
+    			var lat = resultArray[i].location.lat;
+    			var lng = resultArray[i].location.lng;
+    			x.markerPosition = {lat, lng};
+    			x.url = resultArray[i].url;
+                self.markerList.push(x);
+	        }
+	        generateMarker();	
+    	});       
     };
 
-    this.currentItem = ko.observable(this.markerList()[this.markerList()[0].index]);
+    this.updateMarkers();
+
+    // initial current item
+    // TODO: see how knockout accepts two conditions
+    var initialObject = {};
+    this.currentItem = ko.observable(initialObject);
+    this.currentItem().title = "placeholder";
+
+    // this.currentItem = ko.observable();
+    // helper observable to set selected class to li
+    // this.definedTitle = ko.observable(false);
+    // this.isDefinded = function(data) {
+    // 	if (self.currentItem().title !== undefined) {
+    // 		if (self.currentItem().title === data.title) {
+    // 			self.definedTitle = true;
+    // 		}
+    // 	}
+    // };
+
     // selects and animates marker
     this.setSelected = function(data) {
-    	
     	self.currentItem(data);
     	animate(oldIndex);
         oldIndex = data.index;
-     	getInfo(data.title, function(result) {
-     		var info = result.query.search[0].snippet;
-     	    animate(data.index, info);
-     	});
-     	
+		animate(data.index);
     };
 
+    // helper observable
+    this.displayed = ko.observable(false);
     // display side nav
-    this.display = ko.observable(false);
     this.setDisplay = function() {
-        if (!self.display()) {
-            self.display(true);
+        if (!self.displayed()) {
+            self.displayed(true);
             setTimeout(setCenter, 3000);
             
             } else {
-            self.display(false);
+            self.displayed(false);
         }
     };
 };
@@ -130,7 +98,7 @@ ko.applyBindings(viewmodel);
 
 
 // MAP STUFF
-// declare global variables
+// declare global variables so they can be called in viewmodel
 var map;
 var markers = [];
 var infowindow = {};
@@ -145,31 +113,33 @@ function initMap() {
         lat: 37.383428,
         lng: -122.066492
     };
-    // map
+    // initialize map
     map = new google.maps.Map(document.getElementById('map'), {
         center: centerMap,
         zoom: 12,
+        // map control
         mapTypeControl: true,
     	mapTypeControlOptions: {
         style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
         position: google.maps.ControlPosition.TOP_RIGHT
-    }
+    	}
     });
 
-    // declare info window - check declaration
+    // initialize info window
     var infowindow = new google.maps.InfoWindow({
     	maxWidth: 200
     });
 
 
-    // generate markers using markerList
+    // generate markers using viewmodel.markerList
     generateMarker = function() {
-        // remove markers
+        // remove markers from map
         for (var i = 0; i < markers.length; i++) {
             markers[i].setMap(null);
         }
+        // empty marker array
         markers = [];
-        // add markers according to makerList
+        // add markers according to viewmodel.makerList
         for (var i = 0; i < viewmodel.markerList().length; i++) {
             markers.push(new google.maps.Marker({
                 position: viewmodel.markerList()[i].markerPosition,
@@ -177,7 +147,7 @@ function initMap() {
                 title: viewmodel.markerList()[i].title,
                 animation: google.maps.Animation.DROP
             }));
-            // and add event listener so animaion starts and info window start on click
+            // and add event listener so animation starts and infowindow opens by calling setSelected on click
             markers[i].addListener('click', (function(markerCopy) {
                 return function() {
                     viewmodel.setSelected(viewmodel.markerList()[markerCopy]);
@@ -185,19 +155,17 @@ function initMap() {
             })(i));
         }
     };
-
+    // call function for the first time so map is populated with markers on initial view
     generateMarker();
 
-    animate = function(markerNumber, info) {
+    // animates marker and opens infowindow when called by setSelected
+    animate = function(markerNumber) {
         if (markerNumber !== undefined) {
             // animation
             if (markerNumber === viewmodel.currentItem().index) {
                 markers[markerNumber].setAnimation(google.maps.Animation.BOUNCE);
-                // add infowindow
-
-                // getInfo(viewmodel.currentItem().title);
-                console.log(info);
-            	infowindow.setContent("<div><h3>" + markers[markerNumber].title + "</h3><p>" + info + "</p></div>");
+                // add infowindow                
+            	infowindow.setContent("<div><h3>" + markers[markerNumber].title + "</h3><p>" + viewmodel.currentItem().url + "</p></div>");
            		infowindow.open(map, markers[markerNumber]);
             } else {
                 markers[markerNumber].setAnimation(null);
@@ -205,6 +173,7 @@ function initMap() {
         }
     };
 
+    // TODO: FIX BUG
     // try to recenter map when list view is hidden - does not work
     // map center is the same according to maps api, but is off center in browser when div grows
     // changed map would be 100% when first loaded, does not solve problem
@@ -226,4 +195,11 @@ $(window).on('resize', function() {
     map.setCenter(currCenter);
 })
 
-// $( ".rigth" ).css( "border", "3px solid red" );
+
+
+// error handling
+// check if foursquare returend stuff (url)
+// same name multiple places get selected in list
+// when list is not full - ikea airfield - error line 173
+// Uncaught TypeError: Cannot read property 'setAnimation' of undefined
+// but sometimes it works
