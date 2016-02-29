@@ -3,8 +3,8 @@ function getInfo(search, callback) {
 	$.ajax({
         url: "https://api.foursquare.com/v2/venues/search?",
         data: {
-        	client_id: 
-        	client_secret: 
+        	client_id: ,
+        	client_secret: ,
         	v: '20130815',
         	near: "Mountain View",
         	query: search
@@ -42,6 +42,8 @@ var ViewModel = function() {
     			var lng = resultArray[i].location.lng;
     			x.markerPosition = {lat, lng};
     			x.url = resultArray[i].url;
+    			x.address = resultArray[i].location.address;
+    			x.city = resultArray[i].location.city;
                 self.markerList.push(x);
 	        }
 	        generateMarker();	
@@ -77,14 +79,16 @@ var ViewModel = function() {
 
     // helper observable
     this.displayed = ko.observable(false);
-    // display side nav
+    // display side nav, resize and center map
     this.setDisplay = function() {
         if (!self.displayed()) {
             self.displayed(true);
-            setTimeout(setCenter, 3000);
-            
+            google.maps.event.trigger(map, "resize");
+            setCenter();
             } else {
             self.displayed(false);
+            google.maps.event.trigger(map, "resize");
+            setCenter();
         }
     };
 };
@@ -165,7 +169,7 @@ function initMap() {
             if (markerNumber === viewmodel.currentItem().index) {
                 markers[markerNumber].setAnimation(google.maps.Animation.BOUNCE);
                 // add infowindow                
-            	infowindow.setContent("<div><h3>" + markers[markerNumber].title + "</h3><p>" + viewmodel.currentItem().url + "</p></div>");
+            	infowindow.setContent("<div><h3>" + viewmodel.currentItem().title + "</h3><address>" + viewmodel.currentItem().address + " <br>" + viewmodel.currentItem().city + " </address><a href=\"" + viewmodel.currentItem().url + "\">"+ viewmodel.currentItem().url +"</a></div>");
            		infowindow.open(map, markers[markerNumber]);
             } else {
                 markers[markerNumber].setAnimation(null);
@@ -173,10 +177,7 @@ function initMap() {
         }
     };
 
-    // TODO: FIX BUG
-    // try to recenter map when list view is hidden - does not work
-    // map center is the same according to maps api, but is off center in browser when div grows
-    // changed map would be 100% when first loaded, does not solve problem
+    
     var currentCenter = map.getCenter();
     
     setCenter = function() {
@@ -186,8 +187,6 @@ function initMap() {
     };
 }
 
-// {lat: 37.383428, lng: -122.066492}
-// map.setCenter(new google.maps.LatLng(37.383428, 151));
 // map sta aligend to center, code from: http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
 $(window).on('resize', function() {
 	var currCenter = map.getCenter();
@@ -199,7 +198,6 @@ $(window).on('resize', function() {
 
 // error handling
 // check if foursquare returend stuff (url)
-// same name multiple places get selected in list
 // when list is not full - ikea airfield - error line 173
 // Uncaught TypeError: Cannot read property 'setAnimation' of undefined
 // but sometimes it works

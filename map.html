@@ -16,9 +16,10 @@
 					<input class="searchInput" type="text" placeholder="search" data-bind="textInput: searchedItem"><button data-bind="click: updateMarkers" class="searchBtn"><img class="searchImg" src="images/search.png"></button>
 				</form>
 			</div>
+			<div class="attribution">powered by Foursquare</div>
 			<div class="listDiv">
 				<ul class="listUl" data-bind="foreach: markerList">
-					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().title === title}"></li>
+					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().index === index}"></li>
 					<!-- css: {selected: $parent.definedTitle === true } -->
 				</ul>
 			</div>
