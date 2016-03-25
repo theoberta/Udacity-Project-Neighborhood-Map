@@ -3,12 +3,15 @@ html, body {
 	margin: 0;
 	padding: 0;
 	font-family: 'Raleway', sans-serif;
+	overflow: hidden;
 }
 
+/*/////////////////////////////////////////MAP/////////////////////////////////////////*/
 
-button {
-	background-color: #c8b7b7;
-	border: none;
+.right {
+	height: 100%;
+	width: 75%;
+	display: inline-block;
 }
 
 #map {
@@ -16,24 +19,30 @@ button {
 	width: 100%;
 }
 
-
-
-
-
-.side {
-	width: 25%;
-	position: absolute;
-	z-index: 1;
+.fullWidth {
+	width: 100% !important;
+	/*-webkit-transition-duration: 1s;
+  -moz-transition-duration: 1s;
+  -o-transition-duration: 1s;
+  transition-duration: 1s;*/
 }
 
-.sideNav {
+/*////////////////////////////////////////NAVIGATION//////////////////////////////////*/
+
+.left {
+	width: 25%;
+	height: 100%;
+	display: inline-block;
+	vertical-align: top;
+	background-color: lightgrey;
+	overflow: auto;
 
 }
 
 /*//////////////////////////////////LIST///////////////////////////////////////////*/
 
 .listDiv {
-	background-color: white;
+	background-color: #004455;
 }
 
 .listUl {
@@ -44,31 +53,50 @@ button {
 
 li {
 	padding: 10px 20px;
-	border-bottom: 1px solid #b59f9f;
+	border-bottom: 1px solid #006680;
 	cursor: pointer;
-	color: #b59f9f;
+	color: #0088aa;
 }
 
-li:hover {
-	background-color: #e3dbdb;
-}
-
-.selected {
-	background-color: #e3dbdb;
+li:hover, .selected {
+	background-color: #00aad4;
+	color: white;
+	border-right: 1px solid #0088aa;
 }
 
 /*////////////////////////////////////////////scroll//////////////////////////////////////////*/
 
+::-webkit-scrollbar {
+	background-color: #006680;
+	border: none;
+	width: 9px;
+}
+
+::-webkit-scrollbar-button {
+	display: none;
+}
+
+::-webkit-scrollbar-track {
+	border: none;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: #00aad4;
+
+}
 
 
 /*////////////////////////////////////////////ATTRIBUTION////////////////////////////////////*/
 
 .attribution {
 	padding: 7px 10px;
-	font-size: 0.8em;
-	background-color: #916f6f;
-	color: #c8b7b7;
+	font-size: 0.7em;
+	background-color: #00aad4;
+	color: #004455;
 	letter-spacing: 0.15em;
+	border-right: 1px solid #0088aa;
+	border-bottom: 1px solid #0088aa;
+
 }
 
 /*////////////////////////////////////////////SEARCH///////////////////////////////////////*/
@@ -77,6 +105,14 @@ li:hover {
 	margin: 0;
 }
 
+button {
+	background-color: #004455;
+	border: none;
+}
+
+button:focus {
+	outline: 0;
+}
 
 .searchInput{
 	display: inline-block;
@@ -94,60 +130,89 @@ li:hover {
 	height: 40px;
 	vertical-align: top;
 	padding: 0;
+	color: white;
+	font-size: 1.3em;
 }
 
-
-.searchImg {
-	width: 50%;
-}
 
 .collapseBtn {
 	position: absolute;
 	z-index: 1;
-	height: 30px;
-	background-color: darkgrey;
+	background-color: #004455;
 	color: white;
+	font-size: 1.3em;
 }
 
 .displayNone {
-	/*display: none !important;*/
+	display: none !important;
 	
-	position: absolute;
+	/*position: absolute;*/
+}
+
+
+/*/////////////////////////////////////////// INFOWINDOW ///////////////////////////////////////////////////*/
+
+h3 {
+	color: #004455;
+	margin: 0;
+}
+
+address {
+	padding: 5px 0;
+}
+
+.ratingSpan {
+	font-size: 2em;
+	color: #00aad4;
 	
+}
 
+.rating {
+	padding: 5px 0;
+	margin: 0;
+	line-height: 1em;
+}
+
+a {
+	color: #004455;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #00aad4;
+}
+
+/*///////////////////////////////MEDIA QUERY/////////////////////////////////////////*/
+
+@media (max-width: 530px) {
+  li {
+  	font-size: 0.8em;
+  }
+
+  .attribution {
+  	font-size: 0.5em;
+  }
 }
 
 
 
-/*div.gmnoprint { padding-left: 50px; }*/
+@media (max-width: 450px) {
+	.right {
+  		width: 100% !important;
+  		display: inline;
+  	}
 
+	.left {
+  		width: 112px;
+  		position: absolute;
+  		z-index: 1;
+  	}
 
-.left {
-	width: 25%;
-	height: 100%;
-	display: inline-block;
-	
-	vertical-align: top;
-	background-color: lightgrey;
-	overflow: auto;
+	.collapseBtn {
+		left:112px;
+	}
 
+	.moveBtn {
+		left:0;
+	}
 }
-
-.rigth {
-	height: 100%;
-	width: 75%;
-	display: inline-block;
-
-}
-
-.fullWidth {
-	width: 100% !important;
-	/*-webkit-transition-duration: 1s;
-  -moz-transition-duration: 1s;
-  -o-transition-duration: 1s;
-  transition-duration: 1s;*/
-}
-
-/*body {
-	width: 900px;
-}*/
