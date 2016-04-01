@@ -3,8 +3,8 @@ function getInfo(search, callback) {
     $.ajax({
         url: "https://api.foursquare.com/v2/venues/explore?",
         data: {
-            client_id: 
-            client_secret: 
+            client_id: clientId,
+            client_secret: clientSecret,
             v: '20130815',
             near: "Mountain View",
             query: search
@@ -71,8 +71,8 @@ var ViewModel = function() {
                 var lat = resultArray[i].venue.location.lat;
                 var lng = resultArray[i].venue.location.lng;
                 x.markerPosition = {
-                    lat,
-                    lng
+                    lat: lat,
+                    lng: lng
                 };
                 x.id = resultArray[i].venue.id;
                 x.rating = resultArray[i].venue.rating;
