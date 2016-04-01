@@ -1,6 +1,6 @@
 # Udacity Project: Neighborhood Map
 ### Description
-The Neighborhood Map lets you search for places in the neighborhood and access aditional information
+The Neighborhood Map lets you search for places in the neighborhood and access additional information
 
 ### Features:
 * places are ordered by rating
@@ -12,9 +12,12 @@ The Neighborhood Map lets you search for places in the neighborhood and access a
 * list view can be hidden
 
 
-### API used:
-* Google Maps API
-* Foursquare API
+### APIs used:
+* [Google Maps API](https://developers.google.com/maps/)
+* [Foursquare API](https://developer.foursquare.com/)
 
 ### How to run the App
-Open map.html in a browser
+1. install gulp
+2. run `npm install` to install dependencies
+3. build distribution code by running `gulp dist`
+4. open map.html in a browser

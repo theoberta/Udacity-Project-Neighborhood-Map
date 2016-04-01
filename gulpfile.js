@@ -7,7 +7,6 @@ var cssnano = require('gulp-cssnano');
 var htmlmin = require('gulp-htmlmin');
 var beautify = require('gulp-beautify');
 var cssbeautify = require('gulp-cssbeautify');
-var prettify = require('gulp-prettify');
 var imagemin = require('gulp-imagemin');
 
  
@@ -19,7 +18,7 @@ gulp.task('beautify', function() {
 });
 
 gulp.task('clean', function () {
-	return gulp.src('dist/*', {read: false})
+	return gulp.src('dist', {read: false})
 		.pipe(clean());
 });
 
@@ -41,3 +40,5 @@ gulp.task('vendors', function() {
 	return gulp.src('src/vendors/*')
 	.pipe(gulp.dest('dist/vendors'))
 });
+
+gulp.task('dist', ['minify','image','vendors']);
