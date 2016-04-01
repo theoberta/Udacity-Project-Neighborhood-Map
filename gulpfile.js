@@ -15,8 +15,7 @@ gulp.task('beautify', function() {
   gulp.src('src/*')
     .pipe(gulpIf('*.js', beautify({indentSize: 4})))
     .pipe(gulpIf('*.css', cssbeautify()))
-    .pipe(gulpIf('*.html', prettify({indent_size: 4})))
-    .pipe(gulp.dest(''))
+    .pipe(gulp.dest('src'))
 });
 
 gulp.task('clean', function () {
