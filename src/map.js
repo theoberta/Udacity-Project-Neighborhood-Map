@@ -1,3 +1,5 @@
+"use strict";
+
 // AJAX Request to foursquare
 function getInfo(search, callback) {
     $.ajax({
@@ -10,9 +12,9 @@ function getInfo(search, callback) {
             query: search
         }
     }).done(callback).fail(function() {
-        alert("sorry, there is a problem with loading data from foursquare")
+        alert("sorry, there is a problem with loading data from foursquare");
     });
-};
+}
 
 
 
@@ -21,7 +23,6 @@ var ViewModel = function() {
     // some helper variables
     var self = this;
     var oldIndex;
-    var bestRatings = 0;
     var emptyObject = {};
     var filterTerm = "";
     var searched = "";
@@ -46,7 +47,7 @@ var ViewModel = function() {
 
     // gets called when search button gets pressed or enter is hit
     this.update = function() {
-        // set filter term to empty so search of foursquare data is performed without filter
+        // set filter term to empty, so search of foursquare data is performed without filter
         filterTerm = '';
         searched = self.searchedItem().toLowerCase();
         self.emptyCurrentItem();
@@ -117,7 +118,7 @@ var ViewModel = function() {
             });
 
             // give it the right index
-            for (var i = 0; i < sortedArray.length; i++) {
+            for (i = 0; i < sortedArray.length; i++) {
                 sortedArray[i].index = i;
             }
 
@@ -230,7 +231,7 @@ var generateMarker = function() {
     // calculate rating average
     var rating = 0;
     var numRatings = 0;
-    for (var i = 0; i < viewmodel.markerList().length; i++) {
+    for (i = 0; i < viewmodel.markerList().length; i++) {
         if (viewmodel.markerList()[i].rating !== undefined) {
             rating = rating + viewmodel.markerList()[i].rating;
             numRatings = numRatings + 1;
@@ -239,7 +240,7 @@ var generateMarker = function() {
     var ratingAverage = rating / numRatings;
 
     // generate marker according to viewmodel.makerList
-    for (var i = 0; i < viewmodel.markerList().length; i++) {
+    for (i = 0; i < viewmodel.markerList().length; i++) {
         var marker = new google.maps.Marker({
             position: viewmodel.markerList()[i].markerPosition,
             map: map,
@@ -279,13 +280,21 @@ var animate = function(markerNumber) {
             // define content of infowindow
             var contentString = "<div><h3>" + viewmodel.currentItem().title + "</h3>";
             // check if address, city and rating have a value
-            if (viewmodel.currentItem().address !== undefined && viewmodel.currentItem().city !== undefined) {
-                contentString = contentString + "<address>" + viewmodel.currentItem().address + " <br>" + viewmodel.currentItem().city + " </address>";
+            if (viewmodel.currentItem().address !== undefined &&
+                viewmodel.currentItem().city !== undefined) {
+                contentString = contentString + "<address>" +
+                    viewmodel.currentItem().address + " <br>" +
+                    viewmodel.currentItem().city + " </address>";
             }
             if (viewmodel.currentItem().rating !== undefined) {
-                contentString = contentString + "<p class=\"rating\"><span class=\"ratingSpan\">★ </span>" + viewmodel.currentItem().rating + "</p>";
+                contentString = contentString +
+                    "<p class=\"rating\"><span class=\"ratingSpan\">★ </span>" +
+                    viewmodel.currentItem().rating + "</p>";
             }
-            contentString = contentString + "<a href=\"https://foursquare.com/v/" + viewmodel.currentItem().id + "\">read more</a></div>";
+            contentString = contentString +
+                "<a href=\"https://foursquare.com/v/" +
+                viewmodel.currentItem().id + 
+                "\" target=\"_blank\">read more</a></div>";
             // set content of infowindow and open               
             infowindow.setContent(contentString);
             infowindow.open(map, markers[markerNumber]);
@@ -339,17 +348,21 @@ function initMap() {
     viewmodel.oldIndex = viewmodel.currentItem().index;
 
 }
-
-// map aligend to center when window resizes, code from: http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
+/**
+* map aligend to center when window resizes, code from: 
+* http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
+*/
 $(window).on('resize', function() {
     var currCenter = map.getCenter();
     google.maps.event.trigger(map, 'resize');
     map.setCenter(currCenter);
-})
+});
 
-// filter option
+
 // write something like get info but with filter - or include that in get info - just set filter to something
 // seems unefficient since I have to make call to foursquare again
 // safe searched term somewhere so list will be filled ??
 // easier to make two fields - less confusing for user?
- // check if current item is still there after filter 
+// check if current item is still there after filter 
+// bug infowindow content may not be up to date when none was chosen - localstorage
+// or when filter
