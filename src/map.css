@@ -111,7 +111,7 @@ button:focus {
 
 .searchInput {
     display: inline-block;
-    width: 75%;
+    width: 70%;
     height: 40px;
     vertical-align: top;
     border: none;
@@ -120,7 +120,7 @@ button:focus {
 }
 
 .btnDiv {
-    width: 25%;
+    width: 30%;
     display: inline-block;
 }
 
@@ -134,6 +134,11 @@ button:focus {
     color: white;
     font-size: 1.3em;
     box-sizing: border-box;
+}
+
+.searchBtn:hover,
+.filterBtn:hover {
+    background-color: #006680;
 }
 
 .filterBtn {
@@ -187,6 +192,23 @@ a:hover {
 
 /*///////////////////////////////MEDIA QUERY/////////////////////////////////////////*/
 
+@media (max-width: 900px) {
+    .btnDiv {
+        width: 40%;
+    }
+    .searchInput {
+        width: 60%;
+    }
+
+}
+
+@media (max-width: 650px) {
+    .searchBtn,
+    .filterBtn {
+         font-size: 1em;
+    }
+}
+
 @media (max-width: 530px) {
     li {
         font-size: 0.8em;
@@ -194,6 +216,11 @@ a:hover {
 
     .attribution {
         font-size: 0.5em;
+    }
+
+    .btnDiv,
+    .searchInput {
+        width: 100%;
     }
 }
 
