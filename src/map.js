@@ -23,6 +23,8 @@ var ViewModel = function() {
     var oldIndex;
     var bestRatings = 0;
     var emptyObject = {};
+    var filterTerm = "";
+    var searched = "";
 
     // OBSERVABLES
     // observable searchedItem to monitor value in search box
@@ -33,14 +35,26 @@ var ViewModel = function() {
     this.currentItem = ko.observable();
 
     // FUNCTION DEFINITIONS
+
+    // gets called when filter button is hit
+    this.filter = function() {
+        // set filterTerm to value of input
+        filterTerm = self.searchedItem().toLowerCase();
+        self.emptyCurrentItem();
+        self.updateMarkers();
+    };
+
     // gets called when search button gets pressed or enter is hit
     this.update = function() {
+        // set filter term to empty so search of foursquare data is performed without filter
+        filterTerm = '';
+        searched = self.searchedItem().toLowerCase();
         self.emptyCurrentItem();
         self.setLocalStorageSearch();
         self.updateMarkers();
-    }
+    };
 
-    // set currentItem to empty object
+    // set currentItem to empty object so nothing will be selected
     this.emptyCurrentItem = function() {
         self.currentItem(emptyObject);
         self.currentItem().title = "placeholder";
@@ -52,33 +66,37 @@ var ViewModel = function() {
     };
 
     /**
-     * populate markerList according to searchedItem and 
+     * populates markerList according to searchedItem and 
      * calls generateMarkers so map will be populated
+     * filters results according to filterTerm
      */
     this.updateMarkers = function() {
         // empty marker list
         self.markerList([]);
-        // lowercase searched item from input
-        var searched = self.searchedItem().toLowerCase();
         // call getInfo to get info from foursquare
         getInfo(searched, function(result) {
             var unsortedArray = [];
             var resultArray = result.response.groups[0].items;
             for (var i = 0; i < resultArray.length; i++) {
-                // for each result make an object with needed info and append it to unsortedArray
-                var x = {};
-                x.title = resultArray[i].venue.name;
-                var lat = resultArray[i].venue.location.lat;
-                var lng = resultArray[i].venue.location.lng;
-                x.markerPosition = {
-                    lat: lat,
-                    lng: lng
-                };
-                x.id = resultArray[i].venue.id;
-                x.rating = resultArray[i].venue.rating;
-                x.address = resultArray[i].venue.location.address;
-                x.city = resultArray[i].venue.location.city;
-                unsortedArray.push(x);
+                var name = resultArray[i].venue.name.toLowerCase();
+                // check if filterTerm is in name of venue
+                if (name.indexOf(filterTerm) > -1) {
+                    // for each result make an object with needed info and append it to unsortedArray
+                    // console.log(filterTerm);
+                    var x = {};
+                    x.title = resultArray[i].venue.name;
+                    var lat = resultArray[i].venue.location.lat;
+                    var lng = resultArray[i].venue.location.lng;
+                    x.markerPosition = {
+                        lat: lat,
+                        lng: lng
+                    };
+                    x.id = resultArray[i].venue.id;
+                    x.rating = resultArray[i].venue.rating;
+                    x.address = resultArray[i].venue.location.address;
+                    x.city = resultArray[i].venue.location.city;
+                    unsortedArray.push(x);
+                }
             }
 
             // sort Array according to rating
@@ -109,7 +127,6 @@ var ViewModel = function() {
             oldIndex = self.currentItem().index;
         });
     };
-
 
     // store searched item in localStorage
     this.setLocalStorageCurrent = function() {
@@ -175,12 +192,13 @@ var ViewModel = function() {
 
 
     // populate markerList for the first time
+    searched = self.searchedItem().toLowerCase();
     this.updateMarkers();
+
 };
 
 var viewmodel = new ViewModel();
 ko.applyBindings(viewmodel);
-
 
 
 
@@ -328,3 +346,10 @@ $(window).on('resize', function() {
     google.maps.event.trigger(map, 'resize');
     map.setCenter(currCenter);
 })
+
+// filter option
+// write something like get info but with filter - or include that in get info - just set filter to something
+// seems unefficient since I have to make call to foursquare again
+// safe searched term somewhere so list will be filled ??
+// easier to make two fields - less confusing for user?
+ // check if current item is still there after filter 

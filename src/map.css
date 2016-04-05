@@ -21,10 +21,6 @@ html, body {
 
 .fullWidth {
     width: 100% !important;
-	/*-webkit-transition-duration: 1s;
-  -moz-transition-duration: 1s;
-  -o-transition-duration: 1s;
-  transition-duration: 1s;*/
 }
 
 /*////////////////////////////////////////NAVIGATION//////////////////////////////////*/
@@ -121,14 +117,24 @@ button:focus {
     box-sizing: border-box;
 }
 
-.searchBtn {
-    display: inline-block;
+.btnDiv {
     width: 25%;
+    display: inline-block;
+}
+
+.searchBtn, .filterBtn {
+    display: inline-block;
+    width: 50%;
     height: 40px;
     vertical-align: top;
     padding: 0;
     color: white;
     font-size: 1.3em;
+    box-sizing: border-box;
+}
+
+.filterBtn {
+    border-left: 1px solid #006680;
 }
 
 .collapseBtn {
