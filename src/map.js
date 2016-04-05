@@ -293,7 +293,7 @@ var animate = function(markerNumber) {
             }
             contentString = contentString +
                 "<a href=\"https://foursquare.com/v/" +
-                viewmodel.currentItem().id + 
+                viewmodel.currentItem().id +
                 "\" target=\"_blank\">read more</a></div>";
             // set content of infowindow and open               
             infowindow.setContent(contentString);
@@ -349,9 +349,9 @@ function initMap() {
 
 }
 /**
-* map aligend to center when window resizes, code from: 
-* http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
-*/
+ * map aligend to center when window resizes, code from: 
+ * http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
+ */
 $(window).on('resize', function() {
     var currCenter = map.getCenter();
     google.maps.event.trigger(map, 'resize');
