@@ -51,6 +51,9 @@ var ViewModel = function() {
         filterTerm = '';
         searched = self.searchedItem().toLowerCase();
         self.emptyCurrentItem();
+        // set localStorage to empty current object, so outdated data won't persist when
+        // making a new search
+        self.setLocalStorageCurrent();
         self.setLocalStorageSearch();
         self.updateMarkers();
     };
@@ -67,7 +70,7 @@ var ViewModel = function() {
     };
 
     /**
-     * populates markerList according to searchedItem and 
+     * populates markerList according to searchedItem and
      * calls generateMarkers so map will be populated
      * filters results according to filterTerm
      */
@@ -146,7 +149,7 @@ var ViewModel = function() {
 
     // CODE FOR SECONDARY BEHAVIOUR
 
-    // set list scroll to the right place, so selected list item is visible 
+    // set list scroll to the right place, so selected list item is visible
     this.setScroll = function() {
         var element = document.getElementsByClassName("selected");
         var listDiv = document.getElementsByClassName("left");
@@ -181,7 +184,7 @@ var ViewModel = function() {
     }
 
     /**
-     * give currentItem the value stored in localStorage, 
+     * give currentItem the value stored in localStorage,
      * otherwise make it an empty object, so nothing will be selected
      */
     if (localStorage.getItem("current") != undefined) {
@@ -270,7 +273,7 @@ var generateMarker = function() {
 // animates marker and opens infowindow when called by setSelected
 var animate = function(markerNumber) {
     /**
-     * check if markerNumber and (old) marker exists, 
+     * check if markerNumber and (old) marker exists,
      * otherwise there will be an error when user searches for venue with little results
      */
     if (markerNumber !== undefined && markers[markerNumber] !== undefined) {
@@ -295,7 +298,7 @@ var animate = function(markerNumber) {
                 "<a href=\"https://foursquare.com/v/" +
                 viewmodel.currentItem().id +
                 "\" target=\"_blank\">read more</a></div>";
-            // set content of infowindow and open               
+            // set content of infowindow and open
             infowindow.setContent(contentString);
             infowindow.open(map, markers[markerNumber]);
         } else {
@@ -305,7 +308,7 @@ var animate = function(markerNumber) {
     }
 };
 
-// sets center and resizes map       
+// sets center and resizes map
 var setCenter = function() {
     var currentCenter = map.getCenter();
     google.maps.event.trigger(map, "resize");
@@ -349,7 +352,7 @@ function initMap() {
 
 }
 /**
- * map aligend to center when window resizes, code from: 
+ * map aligend to center when window resizes, code from:
  * http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
  */
 $(window).on('resize', function() {
@@ -357,12 +360,3 @@ $(window).on('resize', function() {
     google.maps.event.trigger(map, 'resize');
     map.setCenter(currCenter);
 });
-
-
-// write something like get info but with filter - or include that in get info - just set filter to something
-// seems unefficient since I have to make call to foursquare again
-// safe searched term somewhere so list will be filled ??
-// easier to make two fields - less confusing for user?
-// check if current item is still there after filter 
-// bug infowindow content may not be up to date when none was chosen - localstorage
-// or when filter
