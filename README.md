@@ -3,6 +3,8 @@
 The Neighborhood Map lets you search for places in the neighborhood and access additional information
 
 ### Features:
+* search button (or enter) lets you search for places from the foursquare API
+* filter button lets you filter the search result by venue name
 * places are ordered by rating
 * places with above average ratings are marked with a light blue symbol
 * info window includes name, address, rating and link to relevant foursquare page
