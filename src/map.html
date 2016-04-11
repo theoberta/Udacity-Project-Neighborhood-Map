@@ -17,7 +17,7 @@
 			<div class="attribution">powered by Foursquare</div>
 			<div class="listDiv">
 				<ul class="listUl" data-bind="foreach: markerList">
-					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().id === id}"></li>
+					<li data-bind="text: title, click: $parent.setSelected, css: {selected: $parent.currentItem().id === id}, visible: visibility"></li>
 				</ul>
 			</div>
 		</div><button data-bind="click: setDisplay, text: arrow, css: {moveBtn: displayed() === true}" class="collapseBtn"></button><div class="right" data-bind="css: {fullWidth: displayed() === true}">

@@ -42,7 +42,17 @@ var ViewModel = function() {
         // set filterTerm to value of input
         filterTerm = self.searchedItem().toLowerCase();
         self.emptyCurrentItem();
-        self.updateMarkers();
+        console.log(self.markerList());
+        for (var i = 0; i < self.markerList().length; i++) {
+            var name = self.markerList()[i].title.toLowerCase();
+            if (name.indexOf(filterTerm) > -1) {
+                self.markerList()[i].visibility(true);
+            }
+            else {
+                self.markerList()[i].visibility(false);
+            }
+        }
+        filterMarkers();
     };
 
     // gets called when search button gets pressed or enter is hit
@@ -82,25 +92,22 @@ var ViewModel = function() {
             var unsortedArray = [];
             var resultArray = result.response.groups[0].items;
             for (var i = 0; i < resultArray.length; i++) {
-                var name = resultArray[i].venue.name.toLowerCase();
-                // check if filterTerm is in name of venue
-                if (name.indexOf(filterTerm) > -1) {
-                    // for each result make an object with needed info and append it to unsortedArray
-                    // console.log(filterTerm);
-                    var x = {};
-                    x.title = resultArray[i].venue.name;
-                    var lat = resultArray[i].venue.location.lat;
-                    var lng = resultArray[i].venue.location.lng;
-                    x.markerPosition = {
-                        lat: lat,
-                        lng: lng
-                    };
-                    x.id = resultArray[i].venue.id;
-                    x.rating = resultArray[i].venue.rating;
-                    x.address = resultArray[i].venue.location.address;
-                    x.city = resultArray[i].venue.location.city;
-                    unsortedArray.push(x);
-                }
+                // for each result make an object with needed info and append it to unsortedArray
+                var x = {};
+                x.title = resultArray[i].venue.name;
+                var lat = resultArray[i].venue.location.lat;
+                var lng = resultArray[i].venue.location.lng;
+                x.markerPosition = {
+                    lat: lat,
+                    lng: lng
+                };
+                x.id = resultArray[i].venue.id;
+                x.rating = resultArray[i].venue.rating;
+                x.address = resultArray[i].venue.location.address;
+                x.city = resultArray[i].venue.location.city;
+                x.visibility = ko.observable(true);
+
+                unsortedArray.push(x);
             }
 
             // sort Array according to rating
@@ -209,18 +216,23 @@ ko.applyBindings(viewmodel);
 // MAP STUFF
 // declare global variables so they can be called in viewmodel
 var map;
-var markers = [];
+
 var infowindow = {};
 
 // define some functions
 // generate markers using viewmodel.markerList
 var generateMarker = function() {
     // remove existing markers from map
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+    for (var i = 0; i < viewmodel.markerList().length; i++) {
+        // check if marker is defined (won't be at first time running)
+        if(viewmodel.markerList()[i].marker !== undefined) {
+        viewmodel.markerList()[i].marker.setMap(null);
+        // empty marker array
+        delete viewmodel.markerList()[i].marker;
+        }
     }
-    // empty marker array
-    markers = [];
+
+
     // define normal marker icon
     var image1 = {
         url: 'images/marker-dark.svg',
@@ -258,9 +270,10 @@ var generateMarker = function() {
             marker.setZIndex(1000);
         }
         // add marker to array
-        markers.push(marker);
+
+        viewmodel.markerList()[i].marker = marker;
         // and add event listener so animation starts and infowindow opens by calling setSelected on click
-        markers[i].addListener('click', (function(markerCopy) {
+        viewmodel.markerList()[i].marker.addListener('click', (function(markerCopy) {
             return function() {
                 viewmodel.setSelected(viewmodel.markerList()[markerCopy]);
                 // scroll to the right spot in the list when marker is clicked
@@ -276,10 +289,10 @@ var animate = function(markerNumber) {
      * check if markerNumber and (old) marker exists,
      * otherwise there will be an error when user searches for venue with little results
      */
-    if (markerNumber !== undefined && markers[markerNumber] !== undefined) {
+    if (markerNumber !== undefined && viewmodel.markerList()[markerNumber].marker !== undefined) {
         // if markerNumber is index of currentItem, marker will be animated
         if (markerNumber === viewmodel.currentItem().index) {
-            markers[markerNumber].setAnimation(google.maps.Animation.BOUNCE);
+            viewmodel.markerList()[markerNumber].marker.setAnimation(google.maps.Animation.BOUNCE);
             // define content of infowindow
             var contentString = "<div><h3>" + viewmodel.currentItem().title + "</h3>";
             // check if address, city and rating have a value
@@ -300,10 +313,10 @@ var animate = function(markerNumber) {
                 "\" target=\"_blank\">read more</a></div>";
             // set content of infowindow and open
             infowindow.setContent(contentString);
-            infowindow.open(map, markers[markerNumber]);
+            infowindow.open(map, viewmodel.markerList()[markerNumber].marker);
         } else {
             // markerNumber is not index of currentItem, so deactivate animation
-            markers[markerNumber].setAnimation(null);
+            viewmodel.markerList()[markerNumber].marker.setAnimation(null);
         }
     }
 };
@@ -315,6 +328,17 @@ var setCenter = function() {
     map.setCenter(currentCenter);
 };
 
+var filterMarkers = function() {
+    for(var i = 0; i < viewmodel.markerList().length; i++) {
+        console.log(viewmodel.markerList()[i].visibility());
+        if(viewmodel.markerList()[i].visibility() === true) {
+        viewmodel.markerList()[i].marker.setVisible(true);
+        }
+        else {
+            viewmodel.markerList()[i].marker.setVisible(false);
+        }
+    }
+};
 
 // gets called when there is an error in request to Google maps
 function googleError() {
