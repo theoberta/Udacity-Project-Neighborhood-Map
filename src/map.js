@@ -17,7 +17,6 @@ function getInfo(search, callback) {
 }
 
 
-
 // VIEWMODEL
 var ViewModel = function() {
     // some helper variables
@@ -41,28 +40,29 @@ var ViewModel = function() {
     this.filter = function() {
         // set filterTerm to value of input
         filterTerm = self.searchedItem().toLowerCase();
+        // cancel animation and set currentItem to empty so nothing will be selected
+        cancelAnimation();
         self.emptyCurrentItem();
-        console.log(self.markerList());
+        // sets visisbility property of markers according to filterTerm
         for (var i = 0; i < self.markerList().length; i++) {
             var name = self.markerList()[i].title.toLowerCase();
             if (name.indexOf(filterTerm) > -1) {
                 self.markerList()[i].visibility(true);
-            }
-            else {
+            } else {
                 self.markerList()[i].visibility(false);
             }
         }
+        // filters markers on map
         filterMarkers();
     };
 
     // gets called when search button gets pressed or enter is hit
     this.update = function() {
-        // set filter term to empty, so search of foursquare data is performed without filter
-        filterTerm = '';
         searched = self.searchedItem().toLowerCase();
-        self.emptyCurrentItem();
         // set localStorage to empty current object, so outdated data won't persist when
         // making a new search
+        self.emptyCurrentItem();
+        // store stuff in localStorage
         self.setLocalStorageCurrent();
         self.setLocalStorageSearch();
         self.updateMarkers();
@@ -84,7 +84,11 @@ var ViewModel = function() {
      * calls generateMarkers so map will be populated
      * filters results according to filterTerm
      */
-    this.updateMarkers = function() {
+    this.updateMarkers = function(firstTime) {
+        // remove markers form map
+        if (!firstTime) {
+            removeMarkers();
+        }
         // empty marker list
         self.markerList([]);
         // call getInfo to get info from foursquare
@@ -134,14 +138,36 @@ var ViewModel = function() {
 
             self.markerList(sortedArray);
             generateMarker();
+            if (firstTime) {
+                self.setCurrentItem();
+            }
             animate(self.currentItem().index);
             oldIndex = self.currentItem().index;
         });
     };
 
-    // store searched item in localStorage
+    // store id of searched item in localStorage
+    // (can't store entire object because marker cannot be stored)
     this.setLocalStorageCurrent = function() {
-        localStorage.setItem("current", JSON.stringify(self.currentItem()));
+        localStorage.setItem("current", self.currentItem().id);
+    };
+
+    /**
+     * give currentItem the value stored in localStorage,
+     * otherwise make it an empty object, so nothing will be selected
+     */
+    this.setCurrentItem = function() {
+        if (localStorage.getItem("current") != undefined) {
+            var itemId = localStorage.getItem("current");
+            for (var i = 0; i < self.markerList().length; i++) {
+                if (self.markerList()[i].id === itemId) {
+                    self.currentItem(self.markerList()[i]);
+                }
+            }
+
+        } else {
+            self.emptyCurrentItem();
+        }
     };
 
     // select and animate marker
@@ -190,21 +216,20 @@ var ViewModel = function() {
         self.searchedItem("sushi");
     }
 
-    /**
-     * give currentItem the value stored in localStorage,
-     * otherwise make it an empty object, so nothing will be selected
-     */
+    // VERY UGLY FIX: give empty object id, so knockout won't complain in generate marker function
+    // about missing id, need to wait for list to set currentItem, but view gets generated before that
+    // could fix it by using other array - sorted array but would have to change scope of it
     if (localStorage.getItem("current") != undefined) {
-        var storedItem = JSON.parse(localStorage.getItem("current"));
-        self.currentItem(storedItem);
+        var itemId = localStorage.getItem("current");
+        self.emptyCurrentItem();
+        self.currentItem().id = itemId;
     } else {
         self.emptyCurrentItem();
     }
 
-
     // populate markerList for the first time
     searched = self.searchedItem().toLowerCase();
-    this.updateMarkers();
+    this.updateMarkers(true);
 
 };
 
@@ -219,19 +244,20 @@ var map;
 
 var infowindow = {};
 
-// define some functions
-// generate markers using viewmodel.markerList
-var generateMarker = function() {
+var removeMarkers = function() {
     // remove existing markers from map
     for (var i = 0; i < viewmodel.markerList().length; i++) {
         // check if marker is defined (won't be at first time running)
-        if(viewmodel.markerList()[i].marker !== undefined) {
-        viewmodel.markerList()[i].marker.setMap(null);
-        // empty marker array
-        delete viewmodel.markerList()[i].marker;
+        if (viewmodel.markerList()[i].marker !== undefined) {
+            viewmodel.markerList()[i].marker.setMap(null);
+            // empty marker array
+            delete viewmodel.markerList()[i].marker;
         }
     }
-
+};
+// define some functions
+// generate markers using viewmodel.markerList
+var generateMarker = function() {
 
     // define normal marker icon
     var image1 = {
@@ -246,7 +272,7 @@ var generateMarker = function() {
     // calculate rating average
     var rating = 0;
     var numRatings = 0;
-    for (i = 0; i < viewmodel.markerList().length; i++) {
+    for (var i = 0; i < viewmodel.markerList().length; i++) {
         if (viewmodel.markerList()[i].rating !== undefined) {
             rating = rating + viewmodel.markerList()[i].rating;
             numRatings = numRatings + 1;
@@ -328,16 +354,23 @@ var setCenter = function() {
     map.setCenter(currentCenter);
 };
 
+// gets called by filter function
+// hides irrelevant markers
 var filterMarkers = function() {
-    for(var i = 0; i < viewmodel.markerList().length; i++) {
-        console.log(viewmodel.markerList()[i].visibility());
-        if(viewmodel.markerList()[i].visibility() === true) {
-        viewmodel.markerList()[i].marker.setVisible(true);
-        }
-        else {
+    for (var i = 0; i < viewmodel.markerList().length; i++) {
+        if (viewmodel.markerList()[i].visibility() === true) {
+            viewmodel.markerList()[i].marker.setVisible(true);
+        } else {
             viewmodel.markerList()[i].marker.setVisible(false);
         }
     }
+};
+
+// gets called by filter function
+// cancels animation of currentItem and closes infowindow
+var cancelAnimation = function() {
+    viewmodel.currentItem().marker.setAnimation(null);
+    infowindow.close();
 };
 
 // gets called when there is an error in request to Google maps
@@ -369,7 +402,7 @@ function initMap() {
     });
 
     // call function for the first time so map is populated with markers on initial view
-    generateMarker();
+    // generateMarker();
 
     animate(viewmodel.currentItem().index);
     viewmodel.oldIndex = viewmodel.currentItem().index;

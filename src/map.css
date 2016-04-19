@@ -196,16 +196,16 @@ a:hover {
     .btnDiv {
         width: 40%;
     }
+
     .searchInput {
         width: 60%;
     }
-
 }
 
 @media (max-width: 650px) {
     .searchBtn,
     .filterBtn {
-         font-size: 1em;
+        font-size: 1em;
     }
 }
 
