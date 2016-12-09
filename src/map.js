@@ -170,17 +170,17 @@ var ViewModel = function() {
     // code to toggle side nav visisbility
     // helper observable
     this.displayed = ko.observable(false);
-    this.arrow = ko.observable("◀");
+    this.arrow = ko.observable("◀\uFE0E");
     // toogle side nav, resize and center map, change arrow direction in button
     this.setDisplay = function() {
         if (!self.displayed()) {
             self.displayed(true);
             setCenter();
-            self.arrow("▶");
+            self.arrow("▶\uFE0E");
         } else {
             self.displayed(false);
             setCenter();
-            self.arrow("◀");
+            self.arrow("◀\uFE0E");
         }
     };
 
