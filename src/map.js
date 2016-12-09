@@ -23,7 +23,6 @@ var ViewModel = function() {
     var self = this;
     var oldIndex;
     var emptyObject = {};
-    var filterTerm = "";
     var searched = "";
 
     // OBSERVABLES
@@ -35,26 +34,6 @@ var ViewModel = function() {
     this.currentItem = ko.observable();
 
     // FUNCTION DEFINITIONS
-
-    // gets called when filter button is hit
-    this.filter = function() {
-        // set filterTerm to value of input
-        filterTerm = self.searchedItem().toLowerCase();
-        // cancel animation and set currentItem to empty so nothing will be selected
-        cancelAnimation();
-        self.emptyCurrentItem();
-        // sets visisbility property of markers according to filterTerm
-        for (var i = 0; i < self.markerList().length; i++) {
-            var name = self.markerList()[i].title.toLowerCase();
-            if (name.indexOf(filterTerm) > -1) {
-                self.markerList()[i].visibility(true);
-            } else {
-                self.markerList()[i].visibility(false);
-            }
-        }
-        // filters markers on map
-        filterMarkers();
-    };
 
     // gets called when search button gets pressed or enter is hit
     this.update = function() {
@@ -82,7 +61,6 @@ var ViewModel = function() {
     /**
      * populates markerList according to searchedItem and
      * calls generateMarkers so map will be populated
-     * filters results according to filterTerm
      */
     this.updateMarkers = function(firstTime) {
         // remove markers form map
@@ -354,25 +332,6 @@ var setCenter = function() {
     map.setCenter(currentCenter);
 };
 
-// gets called by filter function
-// hides irrelevant markers
-var filterMarkers = function() {
-    for (var i = 0; i < viewmodel.markerList().length; i++) {
-        if (viewmodel.markerList()[i].visibility() === true) {
-            viewmodel.markerList()[i].marker.setVisible(true);
-        } else {
-            viewmodel.markerList()[i].marker.setVisible(false);
-        }
-    }
-};
-
-// gets called by filter function
-// cancels animation of currentItem and closes infowindow
-var cancelAnimation = function() {
-    viewmodel.currentItem().marker.setAnimation(null);
-    infowindow.close();
-};
-
 // gets called when there is an error in request to Google maps
 function googleError() {
     alert('Sorry, Google maps could not be loaded.');
@@ -408,6 +367,7 @@ function initMap() {
     viewmodel.oldIndex = viewmodel.currentItem().index;
 
 }
+
 /**
  * map aligend to center when window resizes, code from:
  * http://stackoverflow.com/questions/13034188/how-to-center-align-google-maps-in-a-div-with-a-variable-width
